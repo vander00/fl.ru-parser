@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 
 from ..schemas import ProjectInfo
 from .config import ParserConfig
 from .extractor import ProjectExtractor
+
+_CARD_CLASS: str = "b-post"
 
 
 class PageParser:
@@ -16,8 +19,10 @@ class PageParser:
         soup: BeautifulSoup = BeautifulSoup(html, self._config.html_parser)
         seen_ids: set[str] = set()
         projects: list[ProjectInfo] = []
-        for anchor in soup.find_all("a", href=True):
-            project: ProjectInfo | None = self._extractor.extract(anchor)
+        for card in soup.find_all("div", class_=_CARD_CLASS):
+            if not isinstance(card, Tag):
+                continue
+            project: ProjectInfo | None = self._extractor.extract(card)
             if project is None or project.id in seen_ids:
                 continue
             seen_ids.add(project.id)

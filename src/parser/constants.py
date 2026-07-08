@@ -11,9 +11,4 @@ DEFAULT_HEADERS: dict[str, str] = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 
-BUDGET_UNKNOWN: int = -1
 NO_RESPONSES: int = 0
-
-NOISE_LINES: frozenset[str] = frozenset(
-    {"Откликнуться", "Исполнитель определён", "Исполнитель определен"}
-)

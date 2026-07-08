@@ -4,6 +4,8 @@ from dataclasses import replace
 
 import requests
 
+from .category_extractor import CategoryExtractor
+from .category_parser import CategoryParser
 from .config import ParserConfig
 from .extractor import ProjectExtractor
 from .fetcher import PageFetcher
@@ -15,6 +17,12 @@ class FlParserBuilder:
     def __init__(self) -> None:
         self._config: ParserConfig = ParserConfig()
         self._session: requests.Session | None = None
+
+    def with_category(self, category: str) -> FlParserBuilder:
+        if not category.strip():
+            raise ValueError("category must be a non-empty string")
+        self._config = replace(self._config, category=category.strip("/"))
+        return self
 
     def with_max_pages(self, max_pages: int) -> FlParserBuilder:
         if max_pages < 1:
@@ -50,9 +58,11 @@ class FlParserBuilder:
         config: ParserConfig = self._config
         session: requests.Session = self._session or requests.Session()
         fetcher: PageFetcher = PageFetcher(config, session)
-        extractor: ProjectExtractor = ProjectExtractor(config)
-        page_parser: PageParser = PageParser(config, extractor)
-        return FlParser(config, fetcher, page_parser)
+        page_parser: PageParser = PageParser(config, ProjectExtractor(config))
+        category_parser: CategoryParser = CategoryParser(
+            config, CategoryExtractor(config)
+        )
+        return FlParser(config, fetcher, page_parser, category_parser)
 
 
 Parser = FlParserBuilder

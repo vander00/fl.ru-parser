@@ -7,7 +7,8 @@ from typing import Iterator
 
 import requests
 
-from ..schemas import ProjectInfo
+from ..schemas import Category, ProjectInfo
+from .category_parser import CategoryParser
 from .config import ParserConfig
 from .fetcher import PageFetcher
 from .page_parser import PageParser
@@ -21,10 +22,17 @@ class FlParser:
         config: ParserConfig,
         fetcher: PageFetcher,
         page_parser: PageParser,
+        category_parser: CategoryParser,
     ) -> None:
         self._config: ParserConfig = config
         self._fetcher: PageFetcher = fetcher
         self._page_parser: PageParser = page_parser
+        self._category_parser: CategoryParser = category_parser
+
+    def list_categories(self) -> list[Category]:
+        logger.info("Fetching categories from %s", self._config.listing_url)
+        html: str = self._fetcher.fetch(1)
+        return self._category_parser.parse(html)
 
     def iter_projects(self) -> Iterator[ProjectInfo]:
         for page in range(1, self._config.max_pages + 1):

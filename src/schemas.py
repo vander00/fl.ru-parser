@@ -8,5 +8,14 @@ class ProjectInfo:
     type: str
     url: str
     description: str
-    budget: int
+    budget: str
     responses: int
+    posted: str
+    views: str
+
+
+@dataclass(frozen=True)
+class Category:
+    name: str
+    slug: str
+    url: str
