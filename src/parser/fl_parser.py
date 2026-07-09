@@ -38,6 +38,7 @@ class FlParser:
         return self._category_parser.parse(html)
 
     def iter_projects(self) -> Iterator[ProjectInfo]:
+        seen_ids: set[str] = set()
         for page in range(1, self._config.max_pages + 1):
             logger.debug("Fetching page %s", page)
             try:
@@ -52,7 +53,8 @@ class FlParser:
                 break
 
             for project in projects:
-                if self._filter.matches(project):
+                if self._filter.matches(project) and project.id not in seen_ids:
+                    seen_ids.add(project.id)
                     yield project
 
             if page < self._config.max_pages:
