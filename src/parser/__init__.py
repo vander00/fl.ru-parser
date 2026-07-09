@@ -6,6 +6,7 @@ from .category_parser import CategoryParser
 from .config import ParserConfig
 from .extractor import ProjectExtractor
 from .fetcher import PageFetcher
+from .filters import ProjectFilter
 from .fl_parser import FlParser
 from .page_parser import PageParser
 
@@ -19,4 +20,5 @@ __all__ = [
     "Parser",
     "ParserConfig",
     "ProjectExtractor",
+    "ProjectFilter",
 ]

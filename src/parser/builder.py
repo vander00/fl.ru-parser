@@ -9,6 +9,7 @@ from .category_parser import CategoryParser
 from .config import ParserConfig
 from .extractor import ProjectExtractor
 from .fetcher import PageFetcher
+from .filters import ProjectFilter
 from .fl_parser import FlParser
 from .page_parser import PageParser
 
@@ -16,12 +17,33 @@ from .page_parser import PageParser
 class FlParserBuilder:
     def __init__(self) -> None:
         self._config: ParserConfig = ParserConfig()
+        self._filter: ProjectFilter = ProjectFilter()
         self._session: requests.Session | None = None
 
     def with_category(self, category: str) -> FlParserBuilder:
         if not category.strip():
             raise ValueError("category must be a non-empty string")
         self._config = replace(self._config, category=category.strip("/"))
+        return self
+
+    def with_filter(self, project_filter: ProjectFilter) -> FlParserBuilder:
+        self._filter = project_filter
+        return self
+
+    def with_min_budget(self, value: int) -> FlParserBuilder:
+        self._filter = replace(self._filter, min_budget=value)
+        return self
+
+    def with_max_budget(self, value: int) -> FlParserBuilder:
+        self._filter = replace(self._filter, max_budget=value)
+        return self
+
+    def with_min_responses(self, value: int) -> FlParserBuilder:
+        self._filter = replace(self._filter, min_responses=value)
+        return self
+
+    def with_max_responses(self, value: int) -> FlParserBuilder:
+        self._filter = replace(self._filter, max_responses=value)
         return self
 
     def with_max_pages(self, max_pages: int) -> FlParserBuilder:
@@ -54,6 +76,10 @@ class FlParserBuilder:
         self._session = session
         return self
 
+    def with_kind(self, kind: bool) -> FlParserBuilder:
+        self._config = replace(self._config, kind=kind)
+        return self
+
     def build(self) -> FlParser:
         config: ParserConfig = self._config
         session: requests.Session = self._session or requests.Session()
@@ -62,7 +88,7 @@ class FlParserBuilder:
         category_parser: CategoryParser = CategoryParser(
             config, CategoryExtractor(config)
         )
-        return FlParser(config, fetcher, page_parser, category_parser)
+        return FlParser(config, fetcher, page_parser, category_parser, self._filter)
 
 
 Parser = FlParserBuilder

@@ -11,6 +11,7 @@ from ..schemas import Category, ProjectInfo
 from .category_parser import CategoryParser
 from .config import ParserConfig
 from .fetcher import PageFetcher
+from .filters import ProjectFilter
 from .page_parser import PageParser
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -23,11 +24,13 @@ class FlParser:
         fetcher: PageFetcher,
         page_parser: PageParser,
         category_parser: CategoryParser,
+        project_filter: ProjectFilter,
     ) -> None:
         self._config: ParserConfig = config
         self._fetcher: PageFetcher = fetcher
         self._page_parser: PageParser = page_parser
         self._category_parser: CategoryParser = category_parser
+        self._filter: ProjectFilter = project_filter
 
     def list_categories(self) -> list[Category]:
         logger.info("Fetching categories from %s", self._config.listing_url)
@@ -48,7 +51,9 @@ class FlParser:
                 logger.info("No projects found on page %s, stopping", page)
                 break
 
-            yield from projects
+            for project in projects:
+                if self._filter.matches(project):
+                    yield project
 
             if page < self._config.max_pages:
                 self._sleep_between_pages()

@@ -14,11 +14,15 @@ class ParserConfig:
     delay: tuple[float, float] = (2.0, 3.5)
     timeout: float = 15.0
     html_parser: str = "html.parser"
+    kind: bool = True
 
     @property
     def listing_url(self) -> str:
         if self.category:
-            return f"{self.base_url}/projects/category/{self.category}/"
+            url: str = f"{self.base_url}/projects/category/{self.category}/"
+            if self.kind:
+                url += "?kind=1"
+            return url
         return f"{self.base_url}/projects/"
 
     def page_url(self, page: int) -> str:
