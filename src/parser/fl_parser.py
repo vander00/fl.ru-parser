@@ -33,13 +33,13 @@ class FlParser:
         self._filter: ProjectFilter = project_filter
 
     def list_categories(self) -> list[Category]:
-        logger.info("Fetching categories from %s", self._config.listing_url)
+        logger.debug("Fetching categories from %s", self._config.listing_url)
         html: str = self._fetcher.fetch(1)
         return self._category_parser.parse(html)
 
     def iter_projects(self) -> Iterator[ProjectInfo]:
         for page in range(1, self._config.max_pages + 1):
-            logger.info("Fetching page %s", page)
+            logger.debug("Fetching page %s", page)
             try:
                 html: str = self._fetcher.fetch(page)
             except requests.RequestException as exc:
