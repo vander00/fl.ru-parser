@@ -1,12 +1,31 @@
 [project]
 name = "flparser"
 version = "0.1.0"
-description = "Add your description here"
+description = "Telegram bot that scrapes freelance projects from fl.ru and pushes new projects to a Telegram chat."
 readme = "README.md"
-requires-python = ">=3.13.12"
+license = { text = "MIT" }
+requires-python = ">=3.13"
+authors = [{ name = "raymond", email = "maks.sokol.2015@inbox.ru" }]
+keywords = ["telegram", "bot", "fl.ru", "freelance", "scraper", "aiogram"]
+
 dependencies = [
     "aiogram>=3.29.1",
     "beautifulsoup4>=4.15.0",
     "python-dotenv>=1.2.2",
     "requests>=2.34.2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/vander00/fl.ru-parser"
+Repository = "https://github.com/vander00/fl.ru-parser"
+Issues = "https://github.com/vander00/fl.ru-parser/issues"
+
+[project.scripts]
+flparser = "src.bot:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
