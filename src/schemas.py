@@ -15,6 +15,16 @@ class ProjectInfo:
 
 
 @dataclass(frozen=True)
+class ArchivedProject:
+    project_id: str
+    name: str
+    url: str
+    budget: str
+    posted: str
+    first_seen_at: float
+
+
+@dataclass(frozen=True)
 class Category:
     name: str
     slug: str
