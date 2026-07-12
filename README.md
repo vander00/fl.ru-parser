@@ -58,7 +58,7 @@ All configuration is read from environment variables (via a `.env` file). Only t
 | `TELEGRAM_CHAT_ID` | Yes | — | Chat ID that receives project notifications |
 | `POLL_INTERVAL_SECONDS` | | `300` | How often to re-scrape fl.ru |
 | `MAX_PAGES` | | `2` | How many listing pages to scan per poll |
-| `DEFAULT_CATEGORY` | | — | Category slug to subscribe to on startup (e.g. `programmirovanie`) |
+| `CATEGORIES` | | — | The categories slug to subscribe to on startup (e.g. `programmirovanie saity`) |
 | `DB_PATH` | | `flparser.db` | Path to the SQLite seen-projects store |
 | `LOG_LEVEL` | | `INFO` | Logging verbosity |
 | `LOG_FILE` | | `bot.log` | Rotating log file path |
