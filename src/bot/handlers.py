@@ -10,14 +10,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 
 from ..schemas import Category
+from .adapter import ProjectAdapter
 from .callbacks import CategoryCallback, FilterCallback, MenuCallback
 from .config import BotConfig
 from .formatting import format_archive, format_subscription
 from .keyboards import back_button, category_menu, filter_menu, main_menu
-from .adapter import ProjectAdapter
 from .states import FilterForm
 from .storage import SeenStore
-from .subscription import Subscription, SubscriptionStore
+from .subscription import MAX_CATEGORIES, Subscription, SubscriptionStore
 
 router: Router = Router(name="fl-bot")
 
@@ -104,7 +104,11 @@ async def on_categories(
     await query.answer("Загружаю категории…")
     categories: list[Category] = await service.list_categories()
     subscription.categories_cache = categories
-    await _edit(message, "Выберите категорию:", category_menu(categories))
+    await _edit(
+        message,
+        "Выберите категории:",
+        category_menu(categories, subscription.categories),
+    )
 
 
 @router.callback_query(CategoryCallback.filter())
@@ -125,16 +129,32 @@ async def on_category_chosen(
         )
         return
 
-    category: Category | None = (
-        None if index == -1 else subscription.categories_cache[index]
-    )
-    subscription.category = category.slug if category else None
-    subscription.category_name = category.name if category else None
+    if index == -1:
+        subscription.categories.clear()
+        toast: str = "Категории сброшены — все проекты"
+    else:
+        category: Category = subscription.categories_cache[index]
+        if category.slug in subscription.categories:
+            del subscription.categories[category.slug]
+            toast = f"Убрано: {category.name}"
+        elif len(subscription.categories) >= MAX_CATEGORIES:
+            await query.answer(
+                f"Можно выбрать не более {MAX_CATEGORIES} категорий.", show_alert=True
+            )
+            return
+        else:
+            subscription.categories[category.slug] = category.name
+            toast = f"Добавлено: {category.name}"
+
     subscription.active = True
     subscription.reset_delivery()
 
-    await _edit(message, format_subscription(subscription), main_menu(subscription))
-    await query.answer(f"Категория: {category.name if category else 'все'}")
+    await _edit(
+        message,
+        "Выберите категории:",
+        category_menu(subscription.categories_cache, subscription.categories),
+    )
+    await query.answer(toast)
 
 
 @router.callback_query(MenuCallback.filter(F.action == "filters"))

@@ -9,10 +9,10 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import User
 
 from ..utils.logging import configure_logging
+from .adapter import ProjectAdapter
 from .config import BotConfig
 from .handlers import router
 from .poller import ProjectPoller
-from .adapter import ProjectAdapter
 from .storage import SeenStore
 from .subscription import Subscription, SubscriptionStore
 
@@ -73,9 +73,8 @@ async def _authorize(bot: Bot) -> User | None:
 # TODO: add several chat ids, one is supported for now althrough the logic supports it
 def _seed_subscription(store: SubscriptionStore, config: BotConfig) -> None:
     subscription: Subscription = store.get_or_create(config.chat_id)
-    if config.default_category:
-        subscription.category = config.default_category
-        subscription.category_name = config.default_category
+    if config.categories:
+        subscription.categories = {slug: slug for slug in config.categories}
         subscription.active = True
 
 

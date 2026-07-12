@@ -12,7 +12,7 @@ class BotConfig:
     chat_id: int
     poll_interval: float = 300.0
     max_pages: int = 2
-    default_category: str | None = None
+    categories: list[str] | None = None
     db_path: str = "flparser.db"
     answer_unknowns: bool = False
     kind: int = 1
@@ -26,7 +26,7 @@ class BotConfig:
         chat_id: int = _require_int("TELEGRAM_CHAT_ID")
         poll_interval: float = float(os.getenv("POLL_INTERVAL_SECONDS", "300"))
         max_pages: int = int(os.getenv("MAX_PAGES", "2"))
-        default_category: str | None = os.getenv("DEFAULT_CATEGORY") or None
+        categories: list[str] | None = os.getenv("CATEGORIES", "").split() or None
         db_path: str = os.getenv("DB_PATH", "flparser.db")
         answer_unknowns: bool = False if os.getenv("ANSWER_UNKNOWNS") is None else True
         kind: int = int(os.getenv("KIND", "1"))
@@ -42,7 +42,7 @@ class BotConfig:
             chat_id=chat_id,
             poll_interval=poll_interval,
             max_pages=max_pages,
-            default_category=default_category,
+            categories=categories,
             db_path=db_path,
             answer_unknowns=answer_unknowns,
             kind=kind,

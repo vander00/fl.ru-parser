@@ -19,7 +19,7 @@ class ProjectAdapter:
     async def fetch_projects(self, subscription: Subscription) -> list[ProjectInfo]:
         return await asyncio.to_thread(
             self._fetch_projects,
-            subscription.category,
+            list(subscription.categories.keys()),
             subscription.project_filter,
         )
 
@@ -27,6 +27,20 @@ class ProjectAdapter:
         return Parser().build().list_categories()
 
     def _fetch_projects(
+        self, categories: list[str], project_filter: ProjectFilter
+    ) -> list[ProjectInfo]:
+        slugs: list[str | None] = list(categories) if categories else [None]
+        seen_ids: set[str] = set()
+        projects: list[ProjectInfo] = []
+        for slug in slugs:
+            for project in self._fetch_category(slug, project_filter):
+                if project.id in seen_ids:
+                    continue
+                seen_ids.add(project.id)
+                projects.append(project)
+        return projects
+
+    def _fetch_category(
         self, category: str | None, project_filter: ProjectFilter
     ) -> list[ProjectInfo]:
         builder: FlParserBuilder = (

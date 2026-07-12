@@ -25,12 +25,16 @@ def format_project(project: ProjectInfo) -> str:
 
 
 def format_subscription(subscription: Subscription) -> str:
-    category: str = subscription.category_name or subscription.category or "Все проекты"
+    categories: str = (
+        ", ".join(subscription.categories.values())
+        if subscription.categories
+        else "Все проекты"
+    )
     status: str = "🟢 включена" if subscription.active else "🔴 выключена"
     return "\n".join(
         [
             html.bold("Текущая подписка"),
-            f"📂 Категория: {html.quote(category)}",
+            f"📂 Категории: {html.quote(categories)}",
             f"🔎 Фильтры: {html.quote(format_filter(subscription.project_filter))}",
             f"📡 Рассылка: {status}",
         ]

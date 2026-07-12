@@ -5,12 +5,13 @@ from dataclasses import dataclass, field
 from ..parser import ProjectFilter
 from ..schemas import Category
 
+MAX_CATEGORIES: int = 5
+
 
 @dataclass
 class Subscription:
     chat_id: int
-    category: str | None = None
-    category_name: str | None = None
+    categories: dict[str, str] = field(default_factory=dict)
     project_filter: ProjectFilter = ProjectFilter()
     active: bool = False
     pending_reprime: bool = False

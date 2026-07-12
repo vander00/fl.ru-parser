@@ -23,6 +23,8 @@ _COLUMNS: tuple[str, ...] = (
 )
 
 
+# It would be better the DB to be async but actually it doesn't make a lot of sense because the bot is likely not popular
+# so maybe the class gotta be rewriten later
 class SeenStore:
     def __init__(self, path: str, retention_seconds: int = RETENTION_SECONDS) -> None:
         self._retention: int = retention_seconds

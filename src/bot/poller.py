@@ -7,8 +7,8 @@ from aiogram import Bot
 from aiogram.enums import ParseMode
 
 from ..schemas import ProjectInfo
-from .formatting import format_project
 from .adapter import ProjectAdapter
+from .formatting import format_project
 from .storage import SeenStore
 from .subscription import Subscription, SubscriptionStore
 

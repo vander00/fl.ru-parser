@@ -22,10 +22,15 @@ def main_menu(subscription: Subscription) -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def category_menu(categories: list[Category]) -> InlineKeyboardMarkup:
+def category_menu(
+    categories: list[Category], selected: dict[str, str]
+) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for index, category in enumerate(categories):
-        builder.button(text=category.name, callback_data=CategoryCallback(index=index))
+        mark: str = "✅ " if category.slug in selected else ""
+        builder.button(
+            text=f"{mark}{category.name}", callback_data=CategoryCallback(index=index)
+        )
     builder.button(text="Любая", callback_data=CategoryCallback(index=-1))
     builder.button(text="⬅️ Назад", callback_data=MenuCallback(action="back"))
     builder.adjust(2)
